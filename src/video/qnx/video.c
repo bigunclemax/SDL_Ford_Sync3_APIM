@@ -22,6 +22,8 @@
 #include "../SDL_sysvideo.h"
 #include "sdl_qnx.h"
 
+#include "SDL_syswm.h"
+
 static screen_context_t context;
 static screen_event_t   event;
 
@@ -293,6 +295,27 @@ static void destroyWindow(_THIS, SDL_Window *window)
 }
 
 /**
+ * Window manager function
+ * @param  __THIS
+ * @param  window  SDL window
+ * @param  info    native screen window handler
+ */
+SDL_bool getWindowWMInfo(_THIS, SDL_Window * window, SDL_SysWMinfo * info)
+{
+    window_impl_t   *impl = (window_impl_t *)window->driverdata;
+
+    if (info->version.major == SDL_MAJOR_VERSION) {
+        info->subsystem = SDL_SYSWM_QNX;
+        info->info.qnx.window = impl->window;
+        return SDL_TRUE;
+    } else {
+        SDL_SetError("Application not compiled with SDL %d",
+                     SDL_MAJOR_VERSION);
+        return SDL_FALSE;
+    }
+}
+
+/**
  * Frees the plugin object created by createDevice().
  * @param   device  Plugin object to free
  */
@@ -325,6 +348,7 @@ static SDL_VideoDevice *createDevice(void)
     device->HideWindow = hideWindow;
     device->PumpEvents = pumpEvents;
     device->DestroyWindow = destroyWindow;
+    device->GetWindowWMInfo = getWindowWMInfo;
 
     device->GL_LoadLibrary = glLoadLibrary;
     device->GL_GetProcAddress = glGetProcAddress;

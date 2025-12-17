@@ -303,10 +303,9 @@ static void deleteDevice(SDL_VideoDevice *device)
 
 /**
  * Creates the QNX video plugin used by SDL.
- * @param   devindex    Unused
  * @return  Initialized device if successful, NULL otherwise
  */
-static SDL_VideoDevice *createDevice(int devindex)
+static SDL_VideoDevice *createDevice(void)
 {
     SDL_VideoDevice *device;
 

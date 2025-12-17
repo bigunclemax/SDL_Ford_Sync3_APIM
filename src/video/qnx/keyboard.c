@@ -101,7 +101,7 @@ void handleKeyboardEvent(screen_event_t event)
     SDL_Scancode    scancode;
 
     // Get the key value.
-    if (screen_get_event_property_iv(event, SCREEN_PROPERTY_SYM, &val) < 0) {
+    if (screen_get_event_property_iv(event, SCREEN_PROPERTY_KEY_SYM, &val) < 0) {
         return;
     }
 
@@ -117,7 +117,7 @@ void handleKeyboardEvent(screen_event_t event)
     }
 
     // Get event flags (key state).
-    if (screen_get_event_property_iv(event, SCREEN_PROPERTY_FLAGS, &val) < 0) {
+    if (screen_get_event_property_iv(event, SCREEN_PROPERTY_KEY_FLAGS, &val) < 0) {
         return;
     }
 

@@ -154,7 +154,7 @@ static int createWindowFramebuffer(_THIS, SDL_Window * window, Uint32 * format,
     screen_buffer_t buffer;
 
     // Get a pointer to the buffer's memory.
-    if (screen_get_window_property_pv(impl->window, SCREEN_PROPERTY_BUFFERS,
+    if (screen_get_window_property_pv(impl->window, SCREEN_PROPERTY_RENDER_BUFFERS, /*SCREEN_PROPERTY_BUFFERS*/
                                       (void **)&buffer) < 0) {
         return -1;
     }
@@ -188,7 +188,7 @@ static int updateWindowFramebuffer(_THIS, SDL_Window *window, const SDL_Rect *re
     window_impl_t   *impl = (window_impl_t *)window->driverdata;
     screen_buffer_t buffer;
 
-    if (screen_get_window_property_pv(impl->window, SCREEN_PROPERTY_BUFFERS,
+    if (screen_get_window_property_pv(impl->window, SCREEN_PROPERTY_RENDER_BUFFERS, /*SCREEN_PROPERTY_BUFFERS*/
                                       (void **)&buffer) < 0) {
         return -1;
     }

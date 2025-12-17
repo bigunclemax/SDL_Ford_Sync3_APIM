@@ -38,6 +38,11 @@
 #include <sys/sysctl.h>
 #endif
 
+#if defined(__QNXNTO__)
+#include <sys/procfs.h>
+#include <sys/dcmd_ip.h>
+#endif
+
 #include "SDL_error.h"
 #include "SDL_stdinc.h"
 #include "SDL_filesystem.h"
@@ -241,6 +246,56 @@ char *SDL_GetBasePath(void)
                 SDL_OutOfMemory();
                 return NULL;
             }
+        }
+    }
+#endif
+
+#if defined(__QNXNTO__) /* fallback for QNX 6.5 */
+    if (!retval) {
+        static struct {
+            procfs_debuginfo info;
+            char buff[PATH_MAX];
+        } name;
+        char resolved_path[PATH_MAX];
+        int fd;
+
+        if ((fd = open("/proc/self/as", O_RDONLY)) == -1) {
+            SDL_SetError("%s: can't open proc file", __func__);
+            return NULL;
+        }
+
+        if (devctl(fd, DCMD_PROC_MAPDEBUG_BASE, &name, sizeof(name), 0) != EOK) {
+            SDL_SetError("%s: devctl error", __func__);
+            close(fd);
+            return NULL;
+        }
+
+        close(fd);
+
+        if (realpath(name.info.path, resolved_path) == NULL) {
+            if (name.info.path[0] != '/' && strlen(name.info.path) < PATH_MAX) {
+                char modified_path[PATH_MAX] = { '/' };
+
+                strcpy(modified_path + 1, name.info.path);
+
+                if (realpath(modified_path, resolved_path) == NULL) {
+                    SDL_SetError("Failed to resolve path: %s and %s",
+                                 name.info.path, modified_path);
+                    return NULL;
+                }
+
+                SDL_SetError("get realpath err - %s for path: %s",
+                             strerror(errno), name.info.path);
+            } else {
+                SDL_SetError("Failed to resolve path: %s", name.info.path);
+                return NULL;
+            }
+        }
+
+        retval = SDL_strdup(resolved_path);
+        if (!retval) {
+            SDL_OutOfMemory();
+            return NULL;
         }
     }
 #endif

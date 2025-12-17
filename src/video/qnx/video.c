@@ -24,6 +24,9 @@
 
 #include "SDL_syswm.h"
 
+extern void s3hid_init(void);
+extern void s3hid_deinit(void);
+
 static screen_context_t context;
 static screen_event_t   event;
 
@@ -53,11 +56,15 @@ static int videoInit(_THIS)
     }
 
     _this->num_displays = 1;
+
+    s3hid_init();
+
     return 0;
 }
 
 static void videoQuit(_THIS)
 {
+    s3hid_deinit();
 }
 
 /**

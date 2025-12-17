@@ -43,7 +43,7 @@ static int videoInit(_THIS)
 {
     SDL_VideoDisplay display;
 
-    if (screen_create_context(&context, 0) < 0) {
+    if (screen_create_context(&context, SCREEN_WINDOW_MANAGER_CONTEXT) < 0) {
         return -1;
     }
 
@@ -83,6 +83,7 @@ static int createWindow(_THIS, SDL_Window *window)
     int             numbufs;
     int             format;
     int             usage;
+    int             zorder = 999;
 
     impl = SDL_calloc(1, sizeof(*impl));
     if (!impl) {
@@ -91,6 +92,12 @@ static int createWindow(_THIS, SDL_Window *window)
 
     // Create a native window.
     if (screen_create_window(&impl->window, context) < 0) {
+        goto fail;
+    }
+
+    // Set zorder
+    if (screen_set_window_property_iv(impl->window, SCREEN_PROPERTY_ZORDER,
+                                      &zorder) < 0) {
         goto fail;
     }
 

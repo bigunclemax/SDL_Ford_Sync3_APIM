@@ -21,6 +21,8 @@
 #include "../../SDL_internal.h"
 #include "../SDL_sysvideo.h"
 #include "sdl_qnx.h"
+#include "../../events/SDL_mouse_c.h"
+#include "../../events/SDL_keyboard_c.h"
 
 #include "SDL_syswm.h"
 
@@ -135,6 +137,11 @@ static int createWindow(_THIS, SDL_Window *window)
     }
 
     window->driverdata = impl;
+
+    /* One window, it always has focus */
+    SDL_SetMouseFocus(window);
+    SDL_SetKeyboardFocus(window);
+
     return 0;
 
 fail:
